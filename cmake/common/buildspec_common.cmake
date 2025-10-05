@@ -1,18 +1,25 @@
 # Common build dependencies module
 
+# cmake-format: off
+# cmake-lint: disable=C0103
+# cmake-lint: disable=E1126
+# cmake-lint: disable=R0912
+# cmake-lint: disable=R0915
+# cmake-format: on
+
 include_guard(GLOBAL)
 
 # _check_deps_version: Checks for obs-deps VERSION file in prefix paths
 function(_check_deps_version version)
   # cmake-format: off
-  set(found FALSE )
+  set(found FALSE PARENT_SCOPE)
   # cmake-format: on
 
   foreach(path IN LISTS CMAKE_PREFIX_PATH)
     if(EXISTS "${path}/share/obs-deps/VERSION")
       if(dependency STREQUAL qt6 AND NOT EXISTS "${path}/lib/cmake/Qt6/Qt6Config.cmake")
         # cmake-format: off
-        set(found FALSE )
+        set(found FALSE PARENT_SCOPE)
         # cmake-format: on
         continue()
       endif()
@@ -24,7 +31,7 @@ function(_check_deps_version version)
 
       if(_check_version VERSION_EQUAL version)
         # cmake-format: off
-        set(found TRUE )
+        set(found TRUE PARENT_SCOPE)
         # cmake-format: on
         break()
       elseif(_check_version VERSION_LESS version)
@@ -33,21 +40,19 @@ function(_check_deps_version version)
         list(REMOVE_ITEM CMAKE_PREFIX_PATH "${path}")
         list(APPEND CMAKE_PREFIX_PATH "${path}")
         # cmake-format: off
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} )
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
         # cmake-format: on
         continue()
       else()
         message(AUTHOR_WARNING "Newer ${label} version detected in ${path}: \n"
                                "Found ${_check_version}, require ${version}")
         # cmake-format: off
-        set(found TRUE )
+        set(found TRUE PARENT_SCOPE)
         # cmake-format: on
         break()
       endif()
     endif()
   endforeach()
-
-  return(PROPAGATE found CMAKE_PREFIX_PATH)
 endfunction()
 
 # _setup_obs_studio: Create obs-studio build project, then build libobs and obs-frontend-api
@@ -56,8 +61,10 @@ function(_setup_obs_studio)
     set(_is_fresh --fresh)
   endif()
 
-  if(NOT DEFINED ${CMAKE_BUILD_TYPE})
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+  if($(CMAKE_BUILD_TYPE) STREQUAL "Release" OR $(CMAKE_BUILD_TYPE) STREQUAL "RelWithDebInfo" OR $(CMAKE_BUILD_TYPE) STREQUAL "MinRelSize")
+    set(OBS_BUILD_TYPE "Release")
+  else()
+    set(OBS_BUILD_TYPE "Debug")
   endif()
 
   if(OS_WINDOWS)
@@ -86,7 +93,7 @@ function(_setup_obs_studio)
 
   message(STATUS "Build ${label} (${arch})")
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config ${CMAKE_BUILD_TYPE} --parallel
+    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config ${OBS_BUILD_TYPE} --parallel
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
     RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
     OUTPUT_QUIET)
@@ -99,7 +106,7 @@ function(_setup_obs_studio)
     set(_cmake_extra "")
   endif()
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --install build_${arch} --component Development --config ${CMAKE_BUILD_TYPE} --prefix
+    COMMAND "${CMAKE_COMMAND}" --install build_${arch} --component Development --config ${OBS_BUILD_TYPE} --prefix
             "${dependencies_dir}" ${_cmake_extra}
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
     RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
