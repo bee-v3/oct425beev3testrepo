@@ -42,15 +42,13 @@ runs:
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
         if [[ '${{ inputs.codesign }}' == 'true' ]] build_args+=(--codesign)
-        git fetch origin --no-recurse-submodules -q
-        .github/scripts/build-macos ${build_args}
+
+        sudo .github/scripts/build-macos ${build_args}
 
     - name: Install Dependencies 🛍️
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        sudo apt update
-        sudo apt install cmake ninja-build pkg-config clang build-essential curl git zsh
         : Install Dependencies 🛍️
         echo ::group::Install Dependencies
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -73,7 +71,7 @@ runs:
         )
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
-        .github/scripts/build-ubuntu ${build_args}
+        sudo .github/scripts/build-ubuntu ${build_args}
 
     - name: Run Windows Build
       if: runner.os == 'Windows'
