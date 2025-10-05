@@ -66,33 +66,52 @@ function(_setup_obs_studio)
     COMMAND
       "${CMAKE_COMMAND}" -S "${dependencies_dir}/${_obs_destination}" -B
       "${dependencies_dir}/${_obs_destination}/build_${arch}" -G ${_cmake_generator} "${_cmake_arch}"
-      -DOBS_CMAKE_VERSION:STRING=${_cmake_version} -DENABLE_PLUGINS:BOOL=OFF -DENABLE_UI:BOOL=OFF
+      -DOBS_CMAKE_VERSION:STRING=3.0.0 -DENABLE_PLUGINS:BOOL=OFF -DENABLE_FRONTEND:BOOL=OFF
       -DOBS_VERSION_OVERRIDE:STRING=${_obs_version} "-DCMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'" ${_is_fresh}
       ${_cmake_extra}
-    RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
-    OUTPUT_QUIET)
+    RESULT_VARIABLE _process_result
+    COMMAND_ERROR_IS_FATAL ANY
+    OUTPUT_QUIET
+  )
   message(STATUS "Configure ${label} (${arch}) - done")
 
-  message(STATUS "Build ${label} (${arch})")
+  message(STATUS "Build ${label} (Debug - ${arch})")
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config ${CMAKE_BUILD_TYPE} --parallel
+    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config Debug --parallel
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
-    RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
-    OUTPUT_QUIET)
-  message(STATUS "Build ${label} (${arch}) - done")
+    RESULT_VARIABLE _process_result
+    COMMAND_ERROR_IS_FATAL ANY
+    OUTPUT_QUIET
+  )
+  message(STATUS "Build ${label} (Debug - ${arch}) - done")
+
+  message(STATUS "Build ${label} (Release - ${arch})")
+  execute_process(
+    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config Release --parallel
+    WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
+    RESULT_VARIABLE _process_result
+    COMMAND_ERROR_IS_FATAL ANY
+    OUTPUT_QUIET
+  )
+  message(STATUS "Build ${label} (Reelase - ${arch}) - done")
 
   message(STATUS "Install ${label} (${arch})")
-  if(OS_WINDOWS)
-    set(_cmake_extra "--component obs_libraries")
-  else()
-    set(_cmake_extra "")
-  endif()
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --install build_${arch} --component Development --config ${CMAKE_BUILD_TYPE} --prefix
-            "${dependencies_dir}" ${_cmake_extra}
+    COMMAND
+      "${CMAKE_COMMAND}" --install build_${arch} --component Development --config Debug --prefix "${dependencies_dir}"
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
-    RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
-    OUTPUT_QUIET)
+    RESULT_VARIABLE _process_result
+    COMMAND_ERROR_IS_FATAL ANY
+    OUTPUT_QUIET
+  )
+  execute_process(
+    COMMAND
+      "${CMAKE_COMMAND}" --install build_${arch} --component Development --config Release --prefix "${dependencies_dir}"
+    WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
+    RESULT_VARIABLE _process_result
+    COMMAND_ERROR_IS_FATAL ANY
+    OUTPUT_QUIET
+  )
   message(STATUS "Install ${label} (${arch}) - done")
 endfunction()
 
@@ -174,8 +193,6 @@ function(_check_dependencies)
         file(ARCHIVE_EXTRACT INPUT "${dependencies_dir}/${file}" DESTINATION "${dependencies_dir}/${destination}")
       endif()
     endif()
-
-    file(WRITE "${dependencies_dir}/.dependency_${dependency}_${arch}.sha256" "${hash}")
 
     if(dependency STREQUAL prebuilt)
       list(APPEND CMAKE_PREFIX_PATH "${dependencies_dir}/${destination}")
