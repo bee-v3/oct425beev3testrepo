@@ -169,6 +169,13 @@
       "configuration": "RelWithDebInfo"
     },
     {
+      "name": "ubuntu-ci-x86_64",
+      "configurePreset": "linux-ci-x86_64",
+      "displayName": "Linux x86_64 CI",
+      "description": "Linux CI build for x86_64",
+      "configuration": "RelWithDebInfo"
+    },
+    {
       "name": "linux-aarch64",
       "configurePreset": "linux-aarch64",
       "displayName": "Linux aarch64",

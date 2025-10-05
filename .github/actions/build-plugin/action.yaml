@@ -36,14 +36,14 @@ runs:
         CODESIGN_IDENT: ${{ inputs.codesignIdent }}
         CODESIGN_TEAM: ${{ inputs.codesignTeam }}
       run: |
-        chmod -R 777 .
         : Run macOS Build
 
+        chmod -R 777 .
         local -a build_args=(--config ${{ inputs.config }})
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
         if [[ '${{ inputs.codesign }}' == 'true' ]] build_args+=(--codesign)
-
+        echo "${build_args}"
         .github/scripts/build-macos ${build_args}
 
     - name: Install Dependencies 🛍️
@@ -64,15 +64,15 @@ runs:
       env:
         CCACHE_DIR: ${{ inputs.workingDirectory }}/.ccache
       run: |
-        chmod -R 777 .
         : Run Ubuntu Build
 
+        chmod -R 777 .
         local -a build_args=(
           --target ubuntu-${{ inputs.target }}
           --config ${{ inputs.config }}
         )
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
-
+        echo "${build_args}"
         .github/scripts/build-ubuntu ${build_args}
 
     - name: Run Windows Build
