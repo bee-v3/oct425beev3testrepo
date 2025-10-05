@@ -45,10 +45,6 @@ function(_setup_obs_studio)
     set(_is_fresh --fresh)
   endif()
 
-  if(NOT DEFINED ${CMAKE_BUILD_TYPE})
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-  endif()
-
   if(OS_WINDOWS)
     set(_cmake_generator "${CMAKE_GENERATOR}")
     set(_cmake_arch "-A ${arch},version=${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
