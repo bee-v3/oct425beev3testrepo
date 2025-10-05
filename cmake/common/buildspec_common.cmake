@@ -1,14 +1,5 @@
 # Common build dependencies module
 
-# cmake-format: off
-# cmake-lint: disable=C0103
-# cmake-lint: disable=E1126
-# cmake-lint: disable=R0912
-# cmake-lint: disable=R0915
-# cmake-format: on
-
-# Common build dependencies module
-
 include_guard(GLOBAL)
 
 # _check_deps_version: Checks for obs-deps VERSION file in prefix paths
