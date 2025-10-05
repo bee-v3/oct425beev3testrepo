@@ -27,7 +27,7 @@ if ( $PSVersionTable.PSVersion -lt '7.0.0' ) {
 
 function Build {
     trap {
-        Pop-Location -Stack BuildTemp -ErrorAction 'SilentlyContinue'
+        Pop-Location -Stack BuildTemp
         Write-Error $_
         Log-Group
         exit 2
@@ -73,6 +73,7 @@ function Build {
 
         $CmakeArgs += @(
             '--preset', $Preset
+            "-DCMAKE_BUILD_TYPE=${Configuration}"
         )
 
         $CmakeBuildArgs += @(
