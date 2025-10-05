@@ -4,12 +4,12 @@ include_guard(GLOBAL)
 
 # _check_deps_version: Checks for obs-deps VERSION file in prefix paths
 function(_check_deps_version version)
-  set(found FALSE PARENT_SCOPE)
+  set(found FALSE )
 
   foreach(path IN LISTS CMAKE_PREFIX_PATH)
     if(EXISTS "${path}/share/obs-deps/VERSION")
       if(dependency STREQUAL qt6 AND NOT EXISTS "${path}/lib/cmake/Qt6/Qt6Config.cmake")
-        set(found FALSE PARENT_SCOPE)
+        set(found FALSE )
         continue()
       endif()
 
@@ -19,23 +19,24 @@ function(_check_deps_version version)
       string(REPLACE "-" "." version "${version}")
 
       if(_check_version VERSION_EQUAL version)
-        set(found TRUE PARENT_SCOPE)
+        set(found TRUE )
         break()
       elseif(_check_version VERSION_LESS version)
         message(AUTHOR_WARNING "Older ${label} version detected in ${path}: \n"
                                "Found ${_check_version}, require ${version}")
         list(REMOVE_ITEM CMAKE_PREFIX_PATH "${path}")
         list(APPEND CMAKE_PREFIX_PATH "${path}")
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
         continue()
       else()
         message(AUTHOR_WARNING "Newer ${label} version detected in ${path}: \n"
                                "Found ${_check_version}, require ${version}")
-        set(found TRUE PARENT_SCOPE)
+        set(found TRUE )
         break()
       endif()
     endif()
   endforeach()
+  return(PROPAGATE found CMAKE_PREFIX_PATH)
 endfunction()
 
 # _setup_obs_studio: Create obs-studio build project, then build libobs and obs-frontend-api
@@ -65,7 +66,7 @@ function(_setup_obs_studio)
     COMMAND
       "${CMAKE_COMMAND}" -S "${dependencies_dir}/${_obs_destination}" -B
       "${dependencies_dir}/${_obs_destination}/build_${arch}" -G ${_cmake_generator} "${_cmake_arch}"
-      -DOBS_CMAKE_VERSION:STRING=${_cmake_version} -DENABLE_PLUGINS:BOOL=OFF -DENABLE_UI:BOOL=OFF
+      -DOBS_CMAKE_VERSION:STRING=${_cmake_version} -DENABLE_PLUGINS:BOOL=OFF -DENABLE_FRONTEND=OFF
       -DOBS_VERSION_OVERRIDE:STRING=${_obs_version} "-DCMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'" ${_is_fresh}
       ${_cmake_extra}
     RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
