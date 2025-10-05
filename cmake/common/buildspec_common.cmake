@@ -128,14 +128,6 @@ function(_check_dependencies)
       string(REPLACE "-REVISION" "" file "${file}")
     endif()
 
-    if(EXISTS "${dependencies_dir}/.dependency_${dependency}_${arch}.sha256")
-      file(
-        READ
-        "${dependencies_dir}/.dependency_${dependency}_${arch}.sha256"
-        OBS_DEPENDENCY_${dependency}_${arch}_HASH
-      )
-    endif()
-    
     set(skip FALSE)
     if(dependency STREQUAL prebuilt OR dependency STREQUAL qt6)
       _check_deps_version(${version})
@@ -182,6 +174,8 @@ function(_check_dependencies)
         file(ARCHIVE_EXTRACT INPUT "${dependencies_dir}/${file}" DESTINATION "${dependencies_dir}/${destination}")
       endif()
     endif()
+
+    file(WRITE "${dependencies_dir}/.dependency_${dependency}_${arch}.sha256" "${hash}")
 
     if(dependency STREQUAL prebuilt)
       list(APPEND CMAKE_PREFIX_PATH "${dependencies_dir}/${destination}")
