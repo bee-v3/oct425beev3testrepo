@@ -1,5 +1,14 @@
 # Common build dependencies module
 
+# cmake-format: off
+# cmake-lint: disable=C0103
+# cmake-lint: disable=E1126
+# cmake-lint: disable=R0912
+# cmake-lint: disable=R0915
+# cmake-format: on
+
+# Common build dependencies module
+
 include_guard(GLOBAL)
 
 # _check_deps_version: Checks for obs-deps VERSION file in prefix paths
@@ -42,6 +51,7 @@ function(_check_deps_version version)
       endif()
     endif()
   endforeach()
+
   return(PROPAGATE found CMAKE_PREFIX_PATH)
 endfunction()
 
@@ -66,7 +76,7 @@ function(_setup_obs_studio)
     COMMAND
       "${CMAKE_COMMAND}" -S "${dependencies_dir}/${_obs_destination}" -B
       "${dependencies_dir}/${_obs_destination}/build_${arch}" -G ${_cmake_generator} "${_cmake_arch}"
-      -DOBS_CMAKE_VERSION:STRING=3.0.0 -DENABLE_PLUGINS:BOOL=OFF -DENABLE_UI:BOOL=OFF
+      -DOBS_CMAKE_VERSION:STRING=3.0.0 -DENABLE_PLUGINS:BOOL=OFF -DENABLE_FRONTEND:BOOL=OFF
       -DOBS_VERSION_OVERRIDE:STRING=${_obs_version} "-DCMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'" ${_is_fresh}
       ${_cmake_extra}
     RESULT_VARIABLE _process_result
