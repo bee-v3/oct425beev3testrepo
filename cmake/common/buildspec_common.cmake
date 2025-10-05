@@ -12,14 +12,14 @@ include_guard(GLOBAL)
 # _check_deps_version: Checks for obs-deps VERSION file in prefix paths
 function(_check_deps_version version)
   # cmake-format: off
-  set(found FALSE PARENT_SCOPE)
+  set(found FALSE)
   # cmake-format: on
 
   foreach(path IN LISTS CMAKE_PREFIX_PATH)
     if(EXISTS "${path}/share/obs-deps/VERSION")
       if(dependency STREQUAL qt6 AND NOT EXISTS "${path}/lib/cmake/Qt6/Qt6Config.cmake")
         # cmake-format: off
-        set(found FALSE PARENT_SCOPE)
+        set(found FALSE)
         # cmake-format: on
         continue()
       endif()
@@ -31,7 +31,7 @@ function(_check_deps_version version)
 
       if(_check_version VERSION_EQUAL version)
         # cmake-format: off
-        set(found TRUE PARENT_SCOPE)
+        set(found TRUE)
         # cmake-format: on
         break()
       elseif(_check_version VERSION_LESS version)
@@ -40,19 +40,20 @@ function(_check_deps_version version)
         list(REMOVE_ITEM CMAKE_PREFIX_PATH "${path}")
         list(APPEND CMAKE_PREFIX_PATH "${path}")
         # cmake-format: off
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
         # cmake-format: on
         continue()
       else()
         message(AUTHOR_WARNING "Newer ${label} version detected in ${path}: \n"
                                "Found ${_check_version}, require ${version}")
         # cmake-format: off
-        set(found TRUE PARENT_SCOPE)
+        set(found TRUE)
         # cmake-format: on
         break()
       endif()
     endif()
   endforeach()
+  return(PROPAGATE found CMAKE_PREFIX_PATH)
 endfunction()
 
 # _setup_obs_studio: Create obs-studio build project, then build libobs and obs-frontend-api
