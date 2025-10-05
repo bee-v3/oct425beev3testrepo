@@ -61,11 +61,15 @@ function(_setup_obs_studio)
     set(_is_fresh --fresh)
   endif()
 
+  if(NOT DEFINED ${CMAKE_BUILD_TYPE})
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+  endif()
+
   if(OS_WINDOWS)
     set(_cmake_generator "${CMAKE_GENERATOR}")
     set(_cmake_arch "-A ${arch}")
     set(_cmake_extra "-DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION} -DCMAKE_ENABLE_SCRIPTING=OFF")
-    set(_cmake_version "2.0.0")
+    set(_cmake_version "3.0.0")
   elseif(OS_MACOS)
     set(_cmake_generator "Xcode")
     set(_cmake_arch "-DCMAKE_OSX_ARCHITECTURES:STRING='arm64;x86_64'")
@@ -87,7 +91,7 @@ function(_setup_obs_studio)
 
   message(STATUS "Build ${label} (${arch})")
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config Debug --parallel
+    COMMAND "${CMAKE_COMMAND}" --build build_${arch} --target obs-frontend-api --config ${CMAKE_BUILD_TYPE} --parallel
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
     RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
     OUTPUT_QUIET)
@@ -100,7 +104,7 @@ function(_setup_obs_studio)
     set(_cmake_extra "")
   endif()
   execute_process(
-    COMMAND "${CMAKE_COMMAND}" --install build_${arch} --component Development --config Debug --prefix
+    COMMAND "${CMAKE_COMMAND}" --install build_${arch} --component Development --config ${CMAKE_BUILD_TYPE} --prefix
             "${dependencies_dir}" ${_cmake_extra}
     WORKING_DIRECTORY "${dependencies_dir}/${_obs_destination}"
     RESULT_VARIABLE _process_result COMMAND_ERROR_IS_FATAL ANY
