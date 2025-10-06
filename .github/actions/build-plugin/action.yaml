@@ -38,13 +38,13 @@ runs:
       run: |
         : Run macOS Build
 
-        chmod -R 777 .
+        chmod -R +x .github/
         local -a build_args=(--config ${{ inputs.config }})
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
         if [[ '${{ inputs.codesign }}' == 'true' ]] build_args+=(--codesign)
-        echo "${build_args}"
-        git fetch origin --no-tags --no-recurse-submodules -q
+
+        #git fetch origin --no-tags --no-recurse-submodules -q
         .github/scripts/build-macos ${build_args}
 
     - name: Install Dependencies 🛍️
@@ -71,13 +71,13 @@ runs:
       run: |
         : Run Ubuntu Build
 
-        chmod -R 777 .
+        chmod -R +x .github/
         local -a build_args=(
           --target ubuntu-${{ inputs.target }}
           --config ${{ inputs.config }}
         )
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
-        echo "${build_args}"
+
         .github/scripts/build-ubuntu ${build_args}
 
     - name: Run Windows Build
