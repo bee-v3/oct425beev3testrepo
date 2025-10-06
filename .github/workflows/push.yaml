@@ -110,6 +110,8 @@ jobs:
           tag_name: ${{ steps.check.outputs.version }}
           name: ${{ needs.build-project.outputs.pluginName }} ${{ steps.check.outputs.version }}
           body_path: ${{ github.workspace }}/CHECKSUMS.txt
+          allow_updates: true
+          replace_assets: true
           files: |
             ${{ github.workspace }}/*.exe
             ${{ github.workspace }}/*.zip
