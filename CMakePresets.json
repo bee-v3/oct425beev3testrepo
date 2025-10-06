@@ -96,6 +96,16 @@
       }
     },
     {
+      "name": "ubuntu-ci-x86_64",
+      "inherits": ["linux-x86_64"],
+      "displayName": "Linux x86_64 CI build",
+      "description": "Build for Linux x86_64 on CI",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_COMPILE_WARNING_AS_ERROR": true
+      }
+    },
+    {
       "name": "linux-aarch64",
       "displayName": "Linux aarch64",
       "description": "Build for Linux aarch64",

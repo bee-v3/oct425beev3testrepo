@@ -183,7 +183,7 @@ ${_usage_host:-}"
     local -a cmake_install_args=(--install)
 
     case ${_loglevel} {
-      0) cmake_args+=(-Wno_deprecated -Wno-dev --log-level=ERROR -DCMAKE_BUILD_TYPE=$config) ;;
+      0) cmake_args+=(-Wno_deprecated -Wno-dev --log-level=ERROR -DCMAKE_BUILD_TYPE=RelWithDebInfo) ;;
       1) ;;
       2) cmake_build_args+=(--verbose) ;;
       *) cmake_args+=(--debug-output) ;;
