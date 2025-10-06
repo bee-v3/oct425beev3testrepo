@@ -47,6 +47,7 @@ runs:
         CHANGED_FILES: ${{ steps.checks.outputs.changedFiles }}
       run: |
         : Run gersemi 🎛️
+        chmod -R 777 .
         if (( ${+RUNNER_DEBUG} )) setopt XTRACE
 
         print ::group::Install gersemi
