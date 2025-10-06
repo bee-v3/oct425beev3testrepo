@@ -44,7 +44,6 @@ runs:
 
         if [[ '${{ inputs.codesign }}' == 'true' ]] build_args+=(--codesign)
 
-        #git fetch origin --no-tags --no-recurse-submodules -q
         .github/scripts/build-macos ${build_args}
 
     - name: Install Dependencies 🛍️
