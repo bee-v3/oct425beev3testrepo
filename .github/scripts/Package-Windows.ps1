@@ -47,6 +47,9 @@ function Package {
     $ProductName = $BuildSpec.name
     $ProductVersion = $BuildSpec.version
 
+    Copy-Item -Path "${ProjectRoot}/release/${Configuration}/${ProductName}/data" -Destination "${ProjectRoot}/release/${Configuration}/data/obs-plugins/${ProductName}" -Recurse
+    Copy-Item -Path "${ProjectRoot}/release/${Configuration}/${ProductName}/bin" -Destination "${ProjectRoot}/release/${Configuration}/obs-plugins" -Recurse
+
     $OutputName = "${ProductName}-${ProductVersion}-windows-${Target}"
 
     $RemoveArgs = @{
