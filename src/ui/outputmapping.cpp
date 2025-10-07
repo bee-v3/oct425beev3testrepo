@@ -96,12 +96,11 @@ OutputMapping::OutputMapping(const output_mapping_data &mapping_data_in,
 		// call update_handler
 		this->update_handler(this->mapping_data);
 	});
-	connect(ui->checkBox_unhide_Source, &QCheckBox::stateChanged, [this]() {
+	connect(ui->checkBox_unhide_Source, &QCheckBox::checkStateChanged, [this](Qt::CheckState state) {
 		// get the selected row
 		const auto row = ui->tableView->currentIndex().row();
 		// set the unhide_output_source of the selected row to the checkBox_unhide_Source state
-		this->mapping_data.mappings[row].unhide_output_source =
-			ui->checkBox_unhide_Source->isChecked();
+		this->mapping_data.mappings[row].unhide_output_source = (state == Qt::Checked);
 		// call update_handler
 		this->update_handler(this->mapping_data);
 	});
