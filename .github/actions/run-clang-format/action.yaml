@@ -49,7 +49,7 @@ runs:
       run: |
         : Run clang-format 🐉
         if (( ${+RUNNER_DEBUG} )) setopt XTRACE
-
+        chmod -R +x ./build-aux/        
         print ::group::Install clang-format-19
         brew install --quiet obsproject/tools/clang-format@19
         print ::endgroup::
